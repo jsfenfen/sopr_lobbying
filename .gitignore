@@ -1,3 +1,10 @@
+# Don't commit the source and csv files:
+*.csv
+*.xml
+
+# apple
+*.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
