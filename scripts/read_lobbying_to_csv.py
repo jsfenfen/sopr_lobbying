@@ -11,8 +11,9 @@ import lxml.etree
 
 from os import walk
 
+from settings import lobby_files_path, outfile_basedir
 
-lobby_files_path = "../data/"
+
 """
 Assumes the lobby files are unzipped in this dir, something like this:
 ├── data
@@ -52,7 +53,6 @@ file_types_to_handle = []
 for f in filings_to_handle:
     file_types_to_handle.append(filing_types[f])
 
-outfile_basedir = "../data_parsed"
 
 
 outfilename = "lobbying_" + "-".join(filings_to_handle) + "_" + "-".join(years_to_handle) + ".csv"
@@ -165,6 +165,12 @@ def flatten_lobby_report(d):
         print "Address missing!"
         pass
     
+    specific_issues = kill_ascii_unprintable(d['specific_issues'])
+    
+    # These sometimes appear, which messes up excel, maybe
+    specific_issues = specific_issues.replace("\n", " ")
+    specific_issues = specific_issues.replace("\r", " ")
+    
     report_flattened = {
     'Received':d['Received'],
     'Amount':d['Amount'],
@@ -182,7 +188,7 @@ def flatten_lobby_report(d):
     'ClientState':d['client']['ClientState'],
     'Year':d['Year'],
     'ID':d['ID'],
-    'specific_issues':kill_ascii_unprintable(d['specific_issues']),
+    'specific_issues':specific_issues,
     'issues':kill_ascii_unprintable(d['issues'])
     }
     
