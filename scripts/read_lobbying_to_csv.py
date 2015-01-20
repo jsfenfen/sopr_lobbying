@@ -14,23 +14,6 @@ from os import walk
 from settings import lobby_files_path, outfile_basedir
 
 
-"""
-Assumes the lobby files are unzipped in this dir, something like this:
-├── data
-│  ├── 2012_3
-│  │  ├── 2012_3_7_1.xml
-│  │  ├── 2012_3_7_10.xml
-...
-│  ├── 2012_4
-│  │  ├── 2012_4_10_1.xml
-│  │  ├── 2012_4_10_10.xml
-...
-│  ├── 2013_1
-│  │  ├── 2013_1_1_1.xml
-│  │  ├── 2013_1_1_10.xml
-etc.
-
-"""
 
 # reports will specify 'AMENDMENT', 'TERMINATION', or '(NO ACTIVITY)' following the type.
 filing_types = {
@@ -47,7 +30,7 @@ years_to_handle = ['2014']
 min_year = min([int(i) for i in years_to_handle])
 
 # the keys in filing_types we care about
-filings_to_handle = ['Q3']
+filings_to_handle = ['Q4']
 
 file_types_to_handle = []
 for f in filings_to_handle:
@@ -154,6 +137,17 @@ def parse_xml(xml):
 
         yield data
 
+def kill_lines_and_clean(text, truncate=False):
+    """ A few reports have unbelievably long entries -- truncate them to make them usable. """
+    text = kill_ascii_unprintable(text)
+    
+    # These sometimes appear, which messes up excel, maybe
+    text = text.replace("\n", " ")
+    text = text.replace("\r", " ")
+    if truncate:
+        text = text[:1000]
+    return text
+    
 def flatten_lobby_report(d):
     #print "keys: " + str(d.keys())
     
@@ -164,12 +158,6 @@ def flatten_lobby_report(d):
     except KeyError:
         print "Address missing!"
         pass
-    
-    specific_issues = kill_ascii_unprintable(d['specific_issues'])
-    
-    # These sometimes appear, which messes up excel, maybe
-    specific_issues = specific_issues.replace("\n", " ")
-    specific_issues = specific_issues.replace("\r", " ")
     
     report_flattened = {
     'Received':d['Received'],
@@ -188,8 +176,8 @@ def flatten_lobby_report(d):
     'ClientState':d['client']['ClientState'],
     'Year':d['Year'],
     'ID':d['ID'],
-    'specific_issues':specific_issues,
-    'issues':kill_ascii_unprintable(d['issues'])
+    'specific_issues':kill_lines_and_clean(d['specific_issues'], truncate=True),
+    'issues':kill_lines_and_clean(d['issues'])
     }
     
     
