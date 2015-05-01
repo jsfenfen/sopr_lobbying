@@ -101,7 +101,7 @@ def parse_xml(xml):
         this_file_type = dict(filing.items())['Type']
         year = dict(filing.items())['Year']
         
-        print "file type=%s year=%s" % (this_file_type, year)
+        #print "file type=%s year=%s" % (this_file_type, year)
         
         handle_this = False
         for file_type in file_types_to_handle:
@@ -213,6 +213,7 @@ if __name__ == "__main__":
     for (dirpath, dirnames, filenames) in walk(lobby_files_path):
         for filename in filenames:
             if filename.find(".xml") > 1:
+                print "handling %s" % (filename)
                 filepath = dirpath + "/" + filename
                 # assumes original filenames, which look like '2013_1_1_13.xml'
                 year = int(filename[:4])
