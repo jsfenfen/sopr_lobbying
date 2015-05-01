@@ -11,7 +11,7 @@ import lxml.etree
 
 from os import walk
 
-from settings import lobby_files_path, outfile_basedir
+from settings import lobby_files_path, outfile_basedir, years_to_print, filings_to_print
 
 
 
@@ -24,21 +24,16 @@ filing_types = {
     'NEW':'NEW REGISTRATIONS'
 }
 
-# Which years do want to process? This is the year of the filing, not the year the filing was received.
-# these must be strings!
-years_to_handle = ['2014']
-min_year = min([int(i) for i in years_to_handle])
 
-# the keys in filing_types we care about
-filings_to_handle = ['Q4']
+min_year = min([int(i) for i in years_to_print])
 
 file_types_to_handle = []
-for f in filings_to_handle:
+for f in filings_to_print:
     file_types_to_handle.append(filing_types[f])
 
 
 
-outfilename = "lobbying_" + "-".join(filings_to_handle) + "_" + "-".join(years_to_handle) + ".csv"
+outfilename = "lobbying_" + "-".join(filings_to_print) + "_" + "-".join(years_to_print) + ".csv"
 
 outfile_fullpath = outfile_basedir + "/" + outfilename
 
@@ -111,7 +106,7 @@ def parse_xml(xml):
         if not handle_this:
             continue
         
-        if not str(year) in years_to_handle:
+        if not str(year) in years_to_print:
             continue
         
         print "handling type=%s year=%s" % (this_file_type, year)
